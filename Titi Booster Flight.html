@@ -1,0 +1,1382 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Titi Booster Flight - Made with Ludo.ai</title>
+    <meta name="description" content="Interactive playable game created with Ludo.ai - AI-powered game development platform">
+    <meta name="generator" content="Ludo.ai">
+    <meta name="author" content="Ludo.ai">
+    <meta name="keywords" content="playable game, interactive, AI-generated, Ludo.ai, pixijs">
+    <meta name="created-date" content="2025-12-24">
+    <meta name="game-engine" content="pixijs">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎮</text></svg>">
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background: #000;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            color: white;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+        .game-header {
+            background: rgba(0, 0, 0, 0.8);
+            padding: 12px 20px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            flex-shrink: 0;
+        }
+        .game-title {
+            font-size: 18px;
+            font-weight: 600;
+            margin: 0 0 4px 0;
+            color: #fff;
+        }
+        .game-info {
+            font-size: 12px;
+            color: rgba(255, 255, 255, 0.7);
+            margin: 0;
+        }
+        .game-description {
+            font-size: 13px;
+            color: rgba(255, 255, 255, 0.9);
+            margin: 8px 0 0 0;
+            line-height: 1.4;
+        }
+        .game-engine {
+            display: inline-block;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-size: 10px;
+            margin-left: 8px;
+            text-transform: uppercase;
+            font-weight: 500;
+        }
+        #gameContainer {
+            flex: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 0;
+        }
+        canvas {
+            display: block;
+            margin: 0 auto;
+            max-width: 100vw;
+            max-height: 100vh;
+            width: auto;
+            height: auto;
+        }
+        body > canvas {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 1;
+        }
+        .ludo-footer {
+            position: fixed;
+            bottom: 0;
+            right: 0;
+            padding: 8px 12px;
+            background: rgba(0, 0, 0, 0.7);
+            color: rgba(255, 255, 255, 0.6);
+            font-size: 11px;
+            text-decoration: none;
+            border-top-left-radius: 4px;
+            transition: all 0.2s ease;
+            z-index: 1000;
+        }
+        .ludo-footer:hover {
+            background: rgba(0, 0, 0, 0.9);
+            color: rgba(255, 255, 255, 0.9);
+        }
+    </style>
+</head>
+<body>
+    <div class="game-header">
+        <h1 class="game-title">Titi Booster Flight</h1>
+        <p class="game-info">
+            Created with Ludo.ai on 2025-12-24
+            <span class="game-engine">pixijs</span>
+        </p>
+        <p class="game-description">Titi Booster Flight is a fast-paced 2D side-scrolling game where players control Titi, a kiwi bird with a jetpack, navigating a tech-themed sky. Players collect social media icons to fill a boost meter and avoid obstacles, aiming for a high score and a special French bonus upon reaching 1000 points.</p>
+        <p class="game-description"><strong>How to Play:</strong> Click or tap to make Titi thrust upwards with the jetpack. Release to fall. Collect Instagram likes and TikTok stars to fill the boost meter. Avoid Shadowban clouds and Bot enemies. Reach a score of 1000 to win a special bonus.</p>
+    </div>
+    <div id="gameContainer"></div>
+    <a href="https://ludo.ai" target="_blank" class="ludo-footer">
+        Made with Ludo.ai
+    </a>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pixi.js/7.4.3/pixi.min.js" integrity="sha512-o3fAFcbCbTTJRFRNx4vByRZVtdKYF9uklctNjDXrN1JjT00rJxCCyNJSDi35rPBEqzWvYplcHLlEmyW34Ado8A==" crossorigin="anonymous" referrerpolicy="no-referrer"></script><script src="https://cdn.jsdelivr.net/npm/pixi-filters@5.3.0/dist/browser/pixi-filters.min.js"></script>
+    <script type="module">
+        // Ludo.ai Playable Game
+        // Generated on: 2025-12-24
+        // Engine: pixijs
+        // Title: Titi Booster Flight
+        
+        // Monitor for canvas elements and move them to gameContainer
+        const gameContainer = document.getElementById('gameContainer');
+        
+        // Function to move canvas elements to gameContainer
+        function moveCanvasToContainer() {
+            const canvases = document.querySelectorAll('body > canvas');
+            canvases.forEach(canvas => {
+                if (canvas.parentElement === document.body) {
+                    gameContainer.appendChild(canvas);
+                }
+            });
+        }
+        
+        // Monitor for new canvas elements
+        const observer = new MutationObserver(() => {
+            moveCanvasToContainer();
+        });
+        observer.observe(document.body, { childList: true });
+        
+        // Initial check
+        setTimeout(moveCanvasToContainer, 100);
+        
+        // ===== RUNTIME LIBRARY =====
+// PixiJS Runtime Library
+// This library provides utility functions for PixiJS games
+// All functions are side-effect free and only execute when called
+
+// ===== ASSET MANAGEMENT =====
+
+const __FALLBACK_ASSET__ = {
+  url: "https://storage.googleapis.com/scraper_ludo/user_images_dev/45f550b2dafbaa5d6f59a0af127d9fa2.png",
+  width: 200,
+  height: 200,
+  description: "Fallback asset (placeholder)"
+};
+
+// getAssetUrl(key) -> string
+function getAssetUrl(key) {
+  const asset = __ASSET_MAP__[key];
+  if (!asset) {
+    console.warn(`Asset '${key}' not found in asset map, using fallback asset`);
+    return __FALLBACK_ASSET__.url;
+  }
+  return asset.url;
+}
+
+// getAssetInfo(key) -> {url, width, height, description}
+function getAssetInfo(key) {
+  const asset = __ASSET_MAP__[key];
+  if (!asset) {
+    console.warn(`Asset '${key}' not found in asset map, using fallback asset`);
+    return __FALLBACK_ASSET__;
+  }
+  return {
+    url: asset.url,
+    width: asset.width,
+    height: asset.height,
+    description: asset.description
+  };
+}
+
+// createSprite(key, {x, y, scale, width, height, anchor}) -> Sprite
+// Use width OR height (not both) to maintain aspect ratio. anchor can be number or {x, y}
+function createSprite(key, options = {}) {
+  const assetInfo = getAssetInfo(key);
+  const sprite = PIXI.Sprite.from(assetInfo.url);
+
+  // Initialize userData to store base scale
+  sprite.userData = sprite.userData || {};
+
+  if (options.scale !== undefined) {
+    sprite.scale.set(options.scale);
+    sprite.userData.baseScale = options.scale;
+  }
+
+  if (options.x !== undefined) sprite.x = options.x;
+  if (options.y !== undefined) sprite.y = options.y;
+
+  if (options.anchor !== undefined) {
+    if (typeof options.anchor === 'number') {
+      sprite.anchor.set(options.anchor);
+    } else if (options.anchor.x !== undefined || options.anchor.y !== undefined) {
+      sprite.anchor.set(options.anchor.x || 0, options.anchor.y || 0);
+    }
+  }
+
+  if (options.width !== undefined) {
+    const aspectRatio = assetInfo.width / assetInfo.height;
+    sprite.width = options.width;
+    sprite.height = options.width / aspectRatio;
+    sprite.userData.baseScale = sprite.scale.x;
+    sprite.userData.targetWidth = options.width;
+  } else if (options.height !== undefined) {
+    const aspectRatio = assetInfo.width / assetInfo.height;
+    sprite.height = options.height;
+    sprite.width = options.height * aspectRatio;
+    sprite.userData.baseScale = sprite.scale.x;
+    sprite.userData.targetHeight = options.height;
+  }
+
+  // If no scale was set, store the default
+  if (sprite.userData.baseScale === undefined) {
+    sprite.userData.baseScale = 1;
+  }
+
+  // Override scale.set to work relatively to baseScale
+  const originalScaleSet = sprite.scale.set.bind(sprite.scale);
+
+  sprite.scale.set = function(x, y) {
+    // Read baseScale dynamically from userData to avoid race conditions
+    let baseScale = sprite.userData?.baseScale || 1;
+
+    // Safety check: if texture loaded after baseScale was calculated, recalculate
+    if (sprite.userData.targetWidth && sprite.texture && sprite.texture.valid) {
+      const expectedScale = sprite.userData.targetWidth / sprite.texture.width;
+      // If current baseScale is way off (close to 1 when it should be small), recalculate
+      if (Math.abs(baseScale - expectedScale) > 0.01 && Math.abs(baseScale - 1.0) < 0.01) {
+        baseScale = expectedScale;
+        sprite.userData.baseScale = expectedScale;
+      }
+    }
+
+    if (y === undefined) {
+      // single value: scale.set(1.2)
+      return originalScaleSet(x * baseScale, x * baseScale);
+    } else {
+      // two values: scale.set(1.2, 1.5)
+      return originalScaleSet(x * baseScale, y * baseScale);
+    }
+  };
+
+  // Keep original for absolute scaling if needed
+  sprite.scale.setAbsolute = originalScaleSet;
+
+  return sprite;
+}
+
+// createContainedSprite(key, containerWidth, containerHeight, options) -> Sprite
+// options: {fitMode, align, anchor}
+// fitMode: 'contain' (fit inside, default), 'cover' (fill, may crop), 'fill' (stretch)
+// align: 'center' (default), 'top', 'bottom', 'left', 'right', 'top-left', etc.
+function createContainedSprite(key, containerWidth, containerHeight, options = {}) {
+  const assetInfo = getAssetInfo(key);
+  const sprite = PIXI.Sprite.from(assetInfo.url);
+
+  // Store container dimensions
+  sprite.userData = sprite.userData || {};
+  sprite.userData.containerWidth = containerWidth;
+  sprite.userData.containerHeight = containerHeight;
+
+  // Calculate scale based on fit mode
+  const fitMode = options.fitMode || 'contain';
+  let scale;
+
+  if (fitMode === 'fill') {
+    // Stretch to fill container
+    sprite.scale.set(
+      containerWidth / assetInfo.width,
+      containerHeight / assetInfo.height
+    );
+  } else if (fitMode === 'cover') {
+    // Scale to cover container (may crop)
+    scale = Math.max(
+      containerWidth / assetInfo.width,
+      containerHeight / assetInfo.height
+    );
+    sprite.scale.set(scale);
+  } else {
+    // Contain - fit inside container
+    scale = Math.min(
+      containerWidth / assetInfo.width,
+      containerHeight / assetInfo.height
+    );
+    sprite.scale.set(scale);
+  }
+
+  sprite.userData.baseScale = sprite.scale.x;
+
+  // Set alignment/anchor
+  const align = options.align || 'center';
+
+  if (options.anchor !== undefined) {
+    // Custom anchor provided
+    if (typeof options.anchor === 'number') {
+      sprite.anchor.set(options.anchor);
+    } else {
+      sprite.anchor.set(options.anchor.x || 0, options.anchor.y || 0);
+    }
+  } else {
+    // Set anchor based on alignment
+    switch (align) {
+      case 'center':
+        sprite.anchor.set(0.5, 0.5);
+        sprite.x = containerWidth / 2;
+        sprite.y = containerHeight / 2;
+        break;
+      case 'top-left':
+        sprite.anchor.set(0, 0);
+        break;
+      case 'top':
+        sprite.anchor.set(0.5, 0);
+        sprite.x = containerWidth / 2;
+        break;
+      case 'top-right':
+        sprite.anchor.set(1, 0);
+        sprite.x = containerWidth;
+        break;
+      case 'left':
+        sprite.anchor.set(0, 0.5);
+        sprite.y = containerHeight / 2;
+        break;
+      case 'right':
+        sprite.anchor.set(1, 0.5);
+        sprite.x = containerWidth;
+        sprite.y = containerHeight / 2;
+        break;
+      case 'bottom-left':
+        sprite.anchor.set(0, 1);
+        sprite.y = containerHeight;
+        break;
+      case 'bottom':
+        sprite.anchor.set(0.5, 1);
+        sprite.x = containerWidth / 2;
+        sprite.y = containerHeight;
+        break;
+      case 'bottom-right':
+        sprite.anchor.set(1, 1);
+        sprite.x = containerWidth;
+        sprite.y = containerHeight;
+        break;
+    }
+  }
+
+  // Override scale.set to work relatively to baseScale
+  const originalScaleSet = sprite.scale.set.bind(sprite.scale);
+
+  sprite.scale.set = function(x, y) {
+    // Read baseScale dynamically from userData to avoid race conditions
+    const baseScale = sprite.userData?.baseScale || 1;
+    if (y === undefined) {
+      return originalScaleSet(x * baseScale, x * baseScale);
+    } else {
+      return originalScaleSet(x * baseScale, y * baseScale);
+    }
+  };
+
+  sprite.scale.setAbsolute = originalScaleSet;
+
+  return sprite;
+}
+
+// createTilingSprite(key, width, height, {x, y, tileScale}) -> TilingSprite
+// Tiles the texture to fill width x height while maintaining aspect ratio
+function createTilingSprite(key, width, height, options = {}) {
+  const assetInfo = getAssetInfo(key);
+  const tilingSprite = new PIXI.TilingSprite(
+    PIXI.Texture.from(assetInfo.url),
+    width,
+    height
+  );
+
+  if (options.x !== undefined) tilingSprite.x = options.x;
+  if (options.y !== undefined) tilingSprite.y = options.y;
+
+  // Calculate scale to match target height while maintaining aspect ratio
+  const scaleToFitHeight = height / assetInfo.height;
+
+  if (options.tileScale !== undefined) {
+    tilingSprite.tileScale.set(options.tileScale);
+  } else {
+    // Auto-scale to fill height, tiles will repeat horizontally
+    tilingSprite.tileScale.set(scaleToFitHeight);
+  }
+
+  return tilingSprite;
+}
+
+// preloadAssets(assetMap, onProgress, onComplete) -> Promise
+// onProgress(loaded, total, percent) and onComplete() callbacks
+async function preloadAssets(assetMap, onProgress, onComplete) {
+  const urls = Object.values(assetMap).map(asset => asset.url);
+  const uniqueUrls = [...new Set(urls)];
+
+  let loaded = 0;
+  const total = uniqueUrls.length;
+
+  try {
+    await Promise.all(
+      uniqueUrls.map(async (url) => {
+        await PIXI.Assets.load(url);
+        loaded++;
+        if (onProgress) {
+          onProgress(loaded, total, loaded / total);
+        }
+      })
+    );
+
+    if (onComplete) {
+      onComplete();
+    }
+  } catch (error) {
+    console.error('Error preloading assets:', error);
+  }
+}
+
+// ===== SPRITE SCALING HELPERS =====
+
+/**
+ * Resets sprite to its original base scale (1.0 relative)
+ * @param {PIXI.Sprite} sprite - The sprite to reset
+ */
+function resetSpriteScale(sprite) {
+  sprite.scale.set(1);
+}
+
+/**
+ * Animates a sprite with a pulse effect
+ * @param {PIXI.Sprite} sprite - The sprite to pulse
+ * @param {number} [intensity=0.1] - Pulse intensity (0.1 = 10% larger)
+ * @param {number} [duration=150] - Duration in milliseconds
+ */
+function pulseSpriteScale(sprite, intensity = 0.1, duration = 150) {
+  const pulseScale = 1 + intensity;
+  sprite.scale.set(pulseScale);
+
+  setTimeout(() => {
+    sprite.scale.set(1);
+  }, duration);
+}
+
+/**
+ * Animates sprite scale change smoothly
+ * @param {PIXI.Sprite} sprite - The sprite to animate
+ * @param {number} targetMultiplier - Target scale multiplier
+ * @param {number} [speed=0.2] - Animation speed (0-1, higher = faster)
+ * @param {Function} [onComplete] - Callback when animation completes
+ */
+function animateSpriteScale(sprite, targetMultiplier, speed = 0.2, onComplete) {
+  const baseScale = sprite.userData?.baseScale || 1;
+  const targetScale = baseScale * targetMultiplier;
+  const currentAbsolute = sprite.scale.x;
+
+  const animate = () => {
+    const newAbsolute = lerp(currentAbsolute, targetScale, speed);
+    sprite.scale.setAbsolute(newAbsolute);
+
+    if (Math.abs(newAbsolute - targetScale) > 0.01) {
+      requestAnimationFrame(animate);
+    } else {
+      sprite.scale.setAbsolute(targetScale);
+      if (onComplete) onComplete();
+    }
+  };
+
+  animate();
+}
+
+// ===== COLLISION DETECTION =====
+
+// rectangleCollision(rect1, rect2) -> boolean
+// rect: {x, y, width, height}
+function rectangleCollision(rect1, rect2) {
+  return (
+    rect1.x < rect2.x + rect2.width &&
+    rect1.x + rect1.width > rect2.x &&
+    rect1.y < rect2.y + rect2.height &&
+    rect1.y + rect1.height > rect2.y
+  );
+}
+
+// spriteCollision(sprite1, sprite2) -> boolean
+function spriteCollision(sprite1, sprite2) {
+  const bounds1 = sprite1.getBounds();
+  const bounds2 = sprite2.getBounds();
+
+  return rectangleCollision(
+    { x: bounds1.x, y: bounds1.y, width: bounds1.width, height: bounds1.height },
+    { x: bounds2.x, y: bounds2.y, width: bounds2.width, height: bounds2.height }
+  );
+}
+
+// circleCollision(obj1, obj2) -> boolean
+// Auto-detects radius from obj.radius or obj.width/2
+function circleCollision(obj1, obj2) {
+  const dx = obj1.x - obj2.x;
+  const dy = obj1.y - obj2.y;
+  const distance = Math.sqrt(dx * dx + dy * dy);
+
+  const radius1 = obj1.radius || obj1.width / 2 || 0;
+  const radius2 = obj2.radius || obj2.width / 2 || 0;
+
+  return distance < radius1 + radius2;
+}
+
+// ===== BOUNDARY HELPERS =====
+
+// setupBoundaryCollision(sprite, bounds) -> 'left'|'right'|'top'|'bottom'|null
+// bounds: {left, right, top, bottom}
+function setupBoundaryCollision(sprite, bounds) {
+  if (sprite.x < bounds.left) {
+    sprite.x = bounds.left;
+    return 'left';
+  }
+  if (sprite.x + sprite.width > bounds.right) {
+    sprite.x = bounds.right - sprite.width;
+    return 'right';
+  }
+  if (sprite.y < bounds.top) {
+    sprite.y = bounds.top;
+    return 'top';
+  }
+  if (sprite.y + sprite.height > bounds.bottom) {
+    sprite.y = bounds.bottom - sprite.height;
+    return 'bottom';
+  }
+  return null;
+}
+
+// wrapAroundScreen(sprite, app) -> void
+function wrapAroundScreen(sprite, app) {
+  if (sprite.x > app.screen.width) {
+    sprite.x = -sprite.width;
+  } else if (sprite.x + sprite.width < 0) {
+    sprite.x = app.screen.width;
+  }
+
+  if (sprite.y > app.screen.height) {
+    sprite.y = -sprite.height;
+  } else if (sprite.y + sprite.height < 0) {
+    sprite.y = app.screen.height;
+  }
+}
+
+// keepOnScreen(sprite, app) -> void
+function keepOnScreen(sprite, app) {
+  if (sprite.x < 0) sprite.x = 0;
+  if (sprite.y < 0) sprite.y = 0;
+  if (sprite.x + sprite.width > app.screen.width) {
+    sprite.x = app.screen.width - sprite.width;
+  }
+  if (sprite.y + sprite.height > app.screen.height) {
+    sprite.y = app.screen.height - sprite.height;
+  }
+}
+
+// ===== PHYSICS HELPERS =====
+
+// applyVelocity(sprite, velocity, delta) -> void
+// Initializes sprite.velocity if needed
+function applyVelocity(sprite, velocity, delta = 1) {
+  if (!sprite.velocity) {
+    sprite.velocity = { ...velocity };
+  }
+
+  sprite.x += sprite.velocity.x * delta;
+  sprite.y += sprite.velocity.y * delta;
+}
+
+// ===== UI HELPERS =====
+
+// createText(text, style, position) -> Text
+// style: {fontSize, fill, ...}, position: {x, y, anchor}
+function createText(text, style = {}, position = {}) {
+  const defaultStyle = {
+    fontSize: 24,
+    fill: 0xffffff,
+    ...style
+  };
+
+  const textObject = new PIXI.Text(text, defaultStyle);
+
+  if (position.x !== undefined) textObject.x = position.x;
+  if (position.y !== undefined) textObject.y = position.y;
+
+  if (position.anchor !== undefined) {
+    if (typeof position.anchor === 'number') {
+      textObject.anchor.set(position.anchor);
+    } else if (position.anchor.x !== undefined || position.anchor.y !== undefined) {
+      textObject.anchor.set(position.anchor.x || 0, position.anchor.y || 0);
+    }
+  }
+
+  return textObject;
+}
+
+// centerObject(object, app) -> void
+function centerObject(object, app) {
+  object.x = (app.screen.width - object.width) / 2;
+  object.y = (app.screen.height - object.height) / 2;
+}
+
+// createButton(text, position, onClick, style) -> Text
+// position: {x, y, anchor}, style: {fontSize, fill, hoverColor}
+function createButton(text, position, onClick, style = {}) {
+  const defaultStyle = {
+    fontSize: 24,
+    fill: 0xffffff,
+    ...style
+  };
+
+  const button = new PIXI.Text(text, defaultStyle);
+  button.x = position.x;
+  button.y = position.y;
+
+  if (position.anchor !== undefined) {
+    if (typeof position.anchor === 'number') {
+      button.anchor.set(position.anchor);
+    } else if (position.anchor.x !== undefined || position.anchor.y !== undefined) {
+      button.anchor.set(position.anchor.x || 0, position.anchor.y || 0);
+    }
+  } else {
+    button.anchor.set(0.5);
+  }
+
+  button.eventMode = 'static';
+  button.cursor = 'pointer';
+
+  button.on('pointerdown', onClick);
+
+  button.on('pointerover', () => {
+    button.style.fill = style.hoverColor || 0xffff00;
+  });
+
+  button.on('pointerout', () => {
+    button.style.fill = style.fill || 0xffffff;
+  });
+
+  return button;
+}
+
+// createRestartButton(app, position, onRestart) -> Text
+function createRestartButton(app, position = {}, onRestart) {
+  const x = position.x !== undefined ? position.x : app.screen.width / 2;
+  const y = position.y !== undefined ? position.y : app.screen.height / 2 + 60;
+
+  return createButton('Restart', { x, y, anchor: 0.5 }, onRestart, {
+    fontSize: 32,
+    fill: 0xffffff
+  });
+}
+
+// showGameOver(app, {title, score, onRestart}) -> Container
+function showGameOver(app, options = {}) {
+  const container = new PIXI.Container();
+
+  const background = new PIXI.Graphics();
+  background.beginFill(0x000000, 0.7);
+  background.drawRect(0, 0, app.screen.width, app.screen.height);
+  background.endFill();
+  container.addChild(background);
+
+  const gameOverText = createText(
+    options.title || 'Game Over',
+    { fontSize: 48, fill: 0xff0000 },
+    { x: app.screen.width / 2, y: app.screen.height / 2 - 50, anchor: 0.5 }
+  );
+  container.addChild(gameOverText);
+
+  if (options.score !== undefined) {
+    const scoreText = createText(
+      `Score: ${options.score}`,
+      { fontSize: 32, fill: 0xffffff },
+      { x: app.screen.width / 2, y: app.screen.height / 2, anchor: 0.5 }
+    );
+    container.addChild(scoreText);
+  }
+
+  if (options.onRestart) {
+    const restartButton = createRestartButton(app, {}, options.onRestart);
+    container.addChild(restartButton);
+  }
+
+  return container;
+}
+
+// ===== KEYBOARD INPUT =====
+
+const __keyboard = {
+  keys: {},
+  _initialized: false
+};
+
+(function initKeyboard() {
+  if (__keyboard._initialized) return;
+
+  window.addEventListener('keydown', (e) => {
+    __keyboard.keys[e.key] = true;
+  });
+
+  window.addEventListener('keyup', (e) => {
+    __keyboard.keys[e.key] = false;
+  });
+
+  __keyboard._initialized = true;
+})();
+
+// isKeyDown(key) -> boolean
+// Check if a key is currently pressed
+// Common keys: 'ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown', ' ' (space), 'w', 'a', 's', 'd'
+function isKeyDown(key) {
+  return __keyboard.keys[key] || false;
+}
+
+// ===== DRAG AND DROP =====
+
+// makeDraggable(sprite, {dragLayer, onDragStart, onDrag, onDragEnd}) -> void
+// IMPORTANT: Sprite must be added to stage/container BEFORE calling this function
+// dragLayer: Container to move sprite to while dragging (optional, defaults to sprite.parent)
+// onDragEnd can return false to snap sprite back to original position
+function makeDraggable(sprite, options = {}) {
+  sprite.eventMode = 'static';
+  sprite.cursor = 'pointer';
+
+  let dragging = false;
+  let dragOffset = { x: 0, y: 0 };
+  let originalParent = null;
+  let originalPosition = { x: 0, y: 0 };
+  let dragLayer = options.dragLayer;
+
+  sprite.on('pointerdown', (event) => {
+    if (!dragLayer) {
+      dragLayer = sprite.parent;
+    }
+
+    dragging = true;
+    originalParent = sprite.parent;
+    originalPosition = { x: sprite.x, y: sprite.y };
+
+    const globalPosition = event.data.global;
+    const spriteGlobalPos = sprite.getGlobalPosition();
+
+    dragOffset.x = globalPosition.x - spriteGlobalPos.x;
+    dragOffset.y = globalPosition.y - spriteGlobalPos.y;
+
+    if (dragLayer && dragLayer !== sprite.parent) {
+      sprite.parent.removeChild(sprite);
+      dragLayer.addChild(sprite);
+      sprite.x = globalPosition.x - dragOffset.x;
+      sprite.y = globalPosition.y - dragOffset.y;
+    }
+
+    if (options.onDragStart) {
+      options.onDragStart(sprite, event);
+    }
+  });
+
+  const onMove = (event) => {
+    if (!dragging) return;
+
+    const globalPosition = event.data.global;
+    sprite.x = globalPosition.x - dragOffset.x;
+    sprite.y = globalPosition.y - dragOffset.y;
+
+    if (options.onDrag) {
+      options.onDrag(sprite, event);
+    }
+  };
+
+  const onEnd = (event) => {
+    if (!dragging) return;
+
+    dragging = false;
+
+    if (options.onDragEnd) {
+      const result = options.onDragEnd(sprite, event, originalParent, originalPosition);
+
+      if (result === false) {
+        if (dragLayer && dragLayer !== originalParent) {
+          sprite.parent.removeChild(sprite);
+          originalParent.addChild(sprite);
+          sprite.x = originalPosition.x;
+          sprite.y = originalPosition.y;
+        } else {
+          sprite.x = originalPosition.x;
+          sprite.y = originalPosition.y;
+        }
+      }
+    }
+  };
+
+  sprite.__dragHandlers = { onMove, onEnd };
+
+  const eventTarget = options.dragGroup || sprite.parent;
+  eventTarget.on('pointermove', onMove);
+  eventTarget.on('pointerup', onEnd);
+  eventTarget.on('pointerupoutside', onEnd);
+}
+
+// removeDraggable(sprite) -> void
+function removeDraggable(sprite) {
+  sprite.eventMode = 'auto';
+  sprite.cursor = 'default';
+  sprite.removeAllListeners('pointerdown');
+
+  if (sprite.__dragHandlers) {
+    const { onMove, onEnd } = sprite.__dragHandlers;
+    sprite.parent.off('pointermove', onMove);
+    sprite.parent.off('pointerup', onEnd);
+    sprite.parent.off('pointerupoutside', onEnd);
+    delete sprite.__dragHandlers;
+  }
+}
+
+// createDropZone(container, {onDrop, highlight}) -> void
+// onDrop(draggedSprite, dropZone, dragData) can return false to reject drop
+// highlight: {normalColor, hoverColor}
+function createDropZone(container, options = {}) {
+  container.__isDropZone = true;
+  container.__dropZoneOptions = options;
+
+  if (options.highlight) {
+    container.eventMode = 'static';
+
+    container.on('pointerover', () => {
+      if (options.highlight.hoverColor !== undefined) {
+        if (container instanceof PIXI.Graphics) {
+          container.tint = options.highlight.hoverColor;
+        } else if (container instanceof PIXI.Sprite) {
+          container.tint = options.highlight.hoverColor;
+        }
+      }
+    });
+
+    container.on('pointerout', () => {
+      if (options.highlight.normalColor !== undefined) {
+        if (container instanceof PIXI.Graphics) {
+          container.tint = options.highlight.normalColor;
+        } else if (container instanceof PIXI.Sprite) {
+          container.tint = options.highlight.normalColor;
+        }
+      }
+    });
+  }
+}
+
+// checkDropZones(draggedSprite, dropZones) -> Container|null
+function checkDropZones(draggedSprite, dropZones) {
+  const draggedBounds = draggedSprite.getBounds();
+
+  for (const zone of dropZones) {
+    const zoneBounds = zone.getBounds();
+    if (rectangleCollision(draggedBounds, zoneBounds)) {
+      return zone;
+    }
+  }
+
+  return null;
+}
+
+// snapToDropZone(sprite, dropZone, {offsetX, offsetY, animate}) -> void
+function snapToDropZone(sprite, dropZone, options = {}) {
+  const offsetX = options.offsetX || 0;
+  const offsetY = options.offsetY || 0;
+
+  if (sprite.parent !== dropZone) {
+    sprite.parent.removeChild(sprite);
+    dropZone.addChild(sprite);
+  }
+
+  if (options.animate) {
+    const targetX = offsetX;
+    const targetY = offsetY;
+
+    const animate = () => {
+      sprite.x = lerp(sprite.x, targetX, 0.2);
+      sprite.y = lerp(sprite.y, targetY, 0.2);
+
+      if (Math.abs(sprite.x - targetX) > 0.1 || Math.abs(sprite.y - targetY) > 0.1) {
+        requestAnimationFrame(animate);
+      } else {
+        sprite.x = targetX;
+        sprite.y = targetY;
+      }
+    };
+    animate();
+  } else {
+    sprite.x = offsetX;
+    sprite.y = offsetY;
+  }
+}
+
+// createDragManager(app, dragLayer) -> DragManager
+// Returns: {addDraggable(sprite, {onDragStart, onDrag, onDropSuccess, onDropFail}), addDropZone(container, options), removeDraggable(sprite), removeDropZone(container), clear()}
+function createDragManager(app, dragLayer) {
+  const manager = {
+    draggables: [],
+    dropZones: [],
+    currentDrag: null,
+
+    addDraggable(sprite, data = {}) {
+      sprite.__dragData = data;
+
+      makeDraggable(sprite, {
+        dragLayer: dragLayer,
+        dragGroup: app.stage,
+
+        onDragStart: (spr, event) => {
+          manager.currentDrag = spr;
+          if (data.onDragStart) data.onDragStart(spr, event);
+        },
+
+        onDrag: (spr, event) => {
+          manager.dropZones.forEach(zone => {
+            const bounds = spr.getBounds();
+            const zoneBounds = zone.getBounds();
+
+            if (rectangleCollision(bounds, zoneBounds)) {
+              if (zone.__dropZoneOptions?.highlight?.hoverColor) {
+                zone.tint = zone.__dropZoneOptions.highlight.hoverColor;
+              }
+            } else {
+              if (zone.__dropZoneOptions?.highlight?.normalColor !== undefined) {
+                zone.tint = zone.__dropZoneOptions.highlight.normalColor;
+              }
+            }
+          });
+
+          if (data.onDrag) data.onDrag(spr, event);
+        },
+
+        onDragEnd: (spr, event, originalParent, originalPosition) => {
+          const dropZone = checkDropZones(spr, manager.dropZones);
+
+          manager.dropZones.forEach(zone => {
+            if (zone.__dropZoneOptions?.highlight?.normalColor !== undefined) {
+              zone.tint = zone.__dropZoneOptions.highlight.normalColor;
+            }
+          });
+
+          if (dropZone) {
+            if (dropZone.__dropZoneOptions?.onDrop) {
+              const result = dropZone.__dropZoneOptions.onDrop(spr, dropZone, spr.__dragData);
+
+              if (result !== false && data.onDropSuccess) {
+                data.onDropSuccess(spr, dropZone);
+              }
+
+              manager.currentDrag = null;
+              return result;
+            }
+          }
+
+          if (data.onDropFail) {
+            data.onDropFail(spr, originalParent, originalPosition);
+          }
+
+          manager.currentDrag = null;
+          return false;
+        }
+      });
+
+      manager.draggables.push(sprite);
+    },
+
+    addDropZone(container, options = {}) {
+      createDropZone(container, options);
+      manager.dropZones.push(container);
+    },
+
+    removeDraggable(sprite) {
+      removeDraggable(sprite);
+      const index = manager.draggables.indexOf(sprite);
+      if (index > -1) {
+        manager.draggables.splice(index, 1);
+      }
+    },
+
+    removeDropZone(container) {
+      const index = manager.dropZones.indexOf(container);
+      if (index > -1) {
+        manager.dropZones.splice(index, 1);
+      }
+    },
+
+    clear() {
+      manager.draggables.forEach(sprite => removeDraggable(sprite));
+      manager.draggables = [];
+      manager.dropZones = [];
+      manager.currentDrag = null;
+    }
+  };
+
+  return manager;
+}
+
+// ===== UTILITY FUNCTIONS =====
+
+// randomRange(min, max) -> number
+function randomRange(min, max) {
+  return Math.random() * (max - min) + min;
+}
+
+// randomInt(min, max) -> number
+function randomInt(min, max) {
+  return Math.floor(randomRange(min, max + 1));
+}
+
+// randomChoice(array) -> any
+function randomChoice(array) {
+  return array[Math.floor(Math.random() * array.length)];
+}
+
+// distance(obj1, obj2) -> number
+function distance(obj1, obj2) {
+  const dx = obj1.x - obj2.x;
+  const dy = obj1.y - obj2.y;
+  return Math.sqrt(dx * dx + dy * dy);
+}
+
+// angleBetween(obj1, obj2) -> number
+// Returns angle in radians
+function angleBetween(obj1, obj2) {
+  return Math.atan2(obj2.y - obj1.y, obj2.x - obj1.x);
+}
+
+// moveTowards(object, target, speed) -> void
+function moveTowards(object, target, speed) {
+  const angle = angleBetween(object, target);
+  object.x += Math.cos(angle) * speed;
+  object.y += Math.sin(angle) * speed;
+}
+
+// clamp(value, min, max) -> number
+function clamp(value, min, max) {
+  return Math.min(Math.max(value, min), max);
+}
+
+// lerp(start, end, t) -> number
+function lerp(start, end, t) {
+  return start + (end - start) * t;
+}
+
+
+// ===== ASSET MAP =====
+const __ASSET_MAP__ = {
+  "titi_player": {
+    "url": "https://storage.googleapis.com/scraper_ludo/user_images_prod/75818ca0223a6d74cd1d3d4b2794bb6d.png",
+    "width": 597,
+    "height": 392,
+    "description": "An orange kiwi bird character wearing a sleek, futuristic jetpack on its back, facing right. The jetpack should have visible thrusters ready for action."
+  },
+  "sky_background": {
+    "url": "https://storage.googleapis.com/scraper_ludo/user_images_prod/4e8126247acdc48a2cc3d9de1c355c40.png",
+    "width": 864,
+    "height": 640,
+    "description": "A bright, vibrant sky background with subtle, abstract tech-oriented patterns and glowing lines representing data visualizations. Keep it generic without specific gameplay elements."
+  },
+  "instagram_like": {
+    "url": "https://storage.googleapis.com/scraper_ludo/user_images_prod/41561b59787ec16571c3f2bc32279d79.png",
+    "width": 397,
+    "height": 346,
+    "description": "A stylized, shiny red heart icon, representing an Instagram 'like'."
+  },
+  "tiktok_star": {
+    "url": "https://storage.googleapis.com/scraper_ludo/user_images_prod/da26053eade54abfb80d5e9e6b9448a5.png",
+    "width": 385,
+    "height": 381,
+    "description": "A vibrant, glowing star icon, representing a TikTok 'star' or 'follower'."
+  },
+  "shadowban_cloud": {
+    "url": "https://storage.googleapis.com/scraper_ludo/user_images_prod/a92c4af60a1cdb4229a3676ca00e3746.png",
+    "width": 496,
+    "height": 473,
+    "description": "A dark, ominous, swirling red cloud with jagged edges, representing a 'shadowban' obstacle."
+  },
+  "bot_enemy": {
+    "url": "https://storage.googleapis.com/scraper_ludo/user_images_prod/67dd4ee7eec1196a4313b55574ad1653.png",
+    "width": 314,
+    "height": 454,
+    "description": "A small, blocky, metallic robot enemy with glowing red eyes, facing right, looking menacing."
+  }
+};
+
+// ===== GAME CODE =====
+    const app = new PIXI.Application({
+  width: 800,
+  height: 600,
+  backgroundColor: 0x1099bb,
+  antialias: true,
+  resolution: 1 // ALWAYS force the resolution to 1 to prevent UI placement issues
+});
+document.body.appendChild(app.view);
+
+    class Game {
+  constructor() {
+    this.player = null;
+    this.background = null;
+    this.collectibles = [];
+    this.obstacles = [];
+    this.particles = [];
+    this.score = 0;
+    this.boostMeter = 0;
+    this.isBoosting = false;
+    this.boostTimer = 0;
+    this.isGameOver = false;
+    this.gameSpeed = 3;
+    this.worldContainer = null;
+    this.scoreText = null;
+    this.boostText = null;
+    this.gravity = 0.4;
+    this.jumpPower = -8;
+    this.jetpackFlames = null;
+    this.penaltyTimer = 0;
+    this.isPenalized = false;
+  }
+  setup() {
+    this.worldContainer = new PIXI.Container();
+    app.stage.addChild(this.worldContainer);
+    this.background = createTilingSprite('sky_background', app.screen.width * 2, app.screen.height, { x: 0, y: 0 });
+    this.worldContainer.addChild(this.background);
+    this.player = createSprite('titi_player', { x: 100, y: app.screen.height / 2, height: 80 });
+    this.player.velocity = { x: 0, y: 0 };
+    this.player.anchor.set(0.5);
+    this.worldContainer.addChild(this.player);
+    this.jetpackFlames = new PIXI.Graphics();
+    this.jetpackFlames.beginFill(0xFF6B35);
+    this.jetpackFlames.moveTo(-10, 0);
+    this.jetpackFlames.lineTo(0, -15);
+    this.jetpackFlames.lineTo(10, 0);
+    this.jetpackFlames.lineTo(0, -5);
+    this.jetpackFlames.closePath();
+    this.jetpackFlames.endFill();
+    this.jetpackFlames.visible = false;
+    this.player.addChild(this.jetpackFlames);
+    this.jetpackFlames.x = -20;
+    this.jetpackFlames.y = 10;
+    const scoreStyle = {
+      fontSize: 32,
+      fill: 0xFFFFFF,
+      fontWeight: 'bold',
+      stroke: 0x000000,
+      strokeThickness: 3
+    };
+    this.scoreText = createText('Score: 0', scoreStyle, { x: 20, y: 20 });
+    app.stage.addChild(this.scoreText);
+    const boostStyle = {
+      fontSize: 24,
+      fill: 0x00FF00,
+      fontWeight: 'bold',
+      stroke: 0x000000,
+      strokeThickness: 3
+    };
+    this.boostText = createText('Boost: 0%', boostStyle, { x: 20, y: 60 });
+    app.stage.addChild(this.boostText);
+    for (let i = 0; i < 5; i++) {
+      this.createCollectible(app.screen.width + i * 300);
+    }
+    for (let i = 0; i < 3; i++) {
+      this.createObstacle(app.screen.width + i * 400);
+    }
+    app.stage.interactive = true;
+    app.stage.on('pointerdown', () => {
+      if (!this.isGameOver) {
+        this.player.velocity.y = this.jumpPower;
+        this.jetpackFlames.visible = true;
+      }
+    });
+    app.stage.on('pointerup', () => {
+      this.jetpackFlames.visible = false;
+    });
+    app.stage.on('pointerupoutside', () => {
+      this.jetpackFlames.visible = false;
+    });
+    app.stage.on('keydown', (e) => {
+      if (e.key === ' ' && !this.isGameOver) {
+        this.player.velocity.y = this.jumpPower;
+        this.jetpackFlames.visible = true;
+      }
+    });
+    app.stage.on('keyup', (e) => {
+      if (e.key === ' ') {
+        this.jetpackFlames.visible = false;
+      }
+    });
+  }
+  createCollectible(x) {
+    const types = ['instagram_like', 'tiktok_star'];
+    const type = randomChoice(types);
+    const collectible = createSprite(type, { 
+      x: x, 
+      y: randomInt(100, app.screen.height - 100), 
+      height: 40 
+    });
+    collectible.anchor.set(0.5);
+    collectible.userData = { type, collected: false };
+    collectible.rotation = 0;
+    this.collectibles.push(collectible);
+    this.worldContainer.addChild(collectible);
+  }
+  createObstacle(x) {
+    const types = ['shadowban_cloud', 'bot_enemy'];
+    const type = randomChoice(types);
+    const obstacle = createSprite(type, { 
+      x: x, 
+      y: randomInt(100, app.screen.height - 100), 
+      height: type === 'bot_enemy' ? 60 : 80 
+    });
+    obstacle.anchor.set(0.5);
+    obstacle.userData = { type, hit: false };
+    this.obstacles.push(obstacle);
+    this.worldContainer.addChild(obstacle);
+  }
+  update(delta) {
+    if (this.isGameOver) return;
+    const speedMultiplier = this.isBoosting || this.isPenalized ? (this.isBoosting ? 2.5 : 0.5) : 1;
+    const actualSpeed = this.gameSpeed * speedMultiplier;
+    this.player.velocity.y += this.gravity;
+    this.player.y += this.player.velocity.y;
+    this.player.rotation = this.player.velocity.y * 0.02;
+    keepOnScreen(this.player, app);
+    if (this.player.y <= 0 || this.player.y >= app.screen.height) {
+      this.gameOver();
+      return;
+    }
+    this.background.tilePosition.x -= actualSpeed * 0.5;
+    this.collectibles.forEach((collectible, index) => {
+      collectible.x -= actualSpeed;
+      collectible.rotation += 0.02;
+      if (collectible.x < -50) {
+        this.worldContainer.removeChild(collectible);
+        this.collectibles.splice(index, 1);
+        this.createCollectible(app.screen.width + randomInt(0, 200));
+      }
+      if (!collectible.userData.collected && circleCollision(this.player, collectible)) {
+        collectible.userData.collected = true;
+        this.worldContainer.removeChild(collectible);
+        this.collectibles.splice(index, 1);
+        const points = collectible.userData.type === 'instagram_like' ? 10 : 15;
+        this.score += points;
+        this.boostMeter = Math.min(100, this.boostMeter + 5);
+        this.createParticles(collectible.x, collectible.y, 0xFFD700);
+        this.createCollectible(app.screen.width + randomInt(300, 600));
+      }
+    });
+    this.obstacles.forEach((obstacle, index) => {
+      obstacle.x -= actualSpeed;
+      if (obstacle.x < -100) {
+        this.worldContainer.removeChild(obstacle);
+        this.obstacles.splice(index, 1);
+        this.createObstacle(app.screen.width + randomInt(200, 500));
+      }
+      if (!obstacle.userData.hit && spriteCollision(this.player, obstacle)) {
+        obstacle.userData.hit = true;
+        if (obstacle.userData.type === 'shadowban_cloud') {
+          this.score = Math.max(0, this.score - 25);
+          this.isPenalized = true;
+          this.penaltyTimer = 120;
+          this.createParticles(obstacle.x, obstacle.y, 0xFF0000);
+        } else {
+          this.player.velocity.y = 5;
+          this.createParticles(obstacle.x, obstacle.y, 0x800000);
+        }
+      }
+    });
+    if (this.boostMeter >= 100 && !this.isBoosting) {
+      this.activateBoost();
+    }
+    if (this.isBoosting) {
+      this.boostTimer--;
+      if (this.boostTimer <= 0) {
+        this.isBoosting = false;
+        this.boostMeter = 0;
+      }
+    }
+    if (this.isPenalized) {
+      this.penaltyTimer--;
+      if (this.penaltyTimer <= 0) {
+        this.isPenalized = false;
+      }
+    }
+    this.particles.forEach((particle, index) => {
+      particle.x -= actualSpeed;
+      particle.y += particle.vy;
+      particle.vy += 0.2;
+      particle.alpha -= 0.02;
+      particle.scale.x *= 0.98;
+      particle.scale.y *= 0.98;
+      if (particle.alpha <= 0) {
+        this.worldContainer.removeChild(particle);
+        this.particles.splice(index, 1);
+      }
+    });
+    this.scoreText.text = `Score: ${this.score}`;
+    this.boostText.text = `Boost: ${Math.floor(this.boostMeter)}%`;
+    this.boostText.style.fill = this.boostMeter >= 100 ? 0xFFFF00 : (this.isPenalized ? 0xFF0000 : 0x00FF00);
+    if (this.player.velocity.y < 0) {
+      this.jetpackFlames.visible = true;
+      this.jetpackFlames.scale.y = 1 + Math.random() * 0.3;
+    } else {
+      this.jetpackFlames.visible = false;
+    }
+    if (this.score >= 1000 && !this.isGameOver) {
+      this.winGame();
+    }
+  }
+  activateBoost() {
+    this.isBoosting = true;
+    this.boostTimer = 180;
+    this.player.velocity.y = -5;
+  }
+  createParticles(x, y, color) {
+    for (let i = 0; i < 10; i++) {
+      const particle = new PIXI.Graphics();
+      particle.beginFill(color);
+      particle.drawCircle(0, 0, randomInt(2, 6));
+      particle.endFill();
+      particle.x = x;
+      particle.y = y;
+      particle.vy = randomInt(-5, -2);
+      particle.alpha = 1;
+      particle.scale.set(1);
+      this.particles.push(particle);
+      this.worldContainer.addChild(particle);
+    }
+  }
+  gameOver() {
+    this.isGameOver = true;
+    showGameOver(app, {
+      title: 'Jeu Terminé!',
+      score: `Score Final: ${this.score}`,
+      onRestart: () => {
+        this.score = 0;
+        this.boostMeter = 0;
+        this.isBoosting = false;
+        this.isPenalized = false;
+        this.isGameOver = false;
+        this.setup();
+      }
+    });
+  }
+  winGame() {
+    this.isGameOver = true;
+    const code = `BOOST${randomInt(1000, 9999)}`;
+    showGameOver(app, {
+      title: 'Félicitations !',
+      score: `Titi a boosté ton compte.\nVoici ton bonus : ${code}`,
+      onRestart: () => {
+        this.score = 0;
+        this.boostMeter = 0;
+        this.isBoosting = false;
+        this.isPenalized = false;
+        this.isGameOver = false;
+        this.setup();
+      }
+    });
+  }
+}
+
+    
+// Preload all assets, then start the game
+preloadAssets(__ASSET_MAP__).then(() => {
+  let game = new Game(app); // Create the game instance
+  game.app = app;
+  if (game.setup) game.setup();
+  app.ticker.add((delta) => {
+    game.update(delta);
+  });
+});
+
+    </script>
+</body>
+</html>
