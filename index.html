@@ -2,7 +2,7 @@
 <html lang="fr">
 <head>
 <meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <title>Titi Booster Flyer</title>
 
 <style>
@@ -12,21 +12,19 @@ html, body {
   background: #000;
   color: #fff;
   font-family: Arial, Helvetica, sans-serif;
-  overflow: hidden;
 }
 
 #game-wrapper {
   display: flex;
   flex-direction: column;
   height: 100vh;
-  width: 100vw;
 }
 
 header {
   text-align: center;
   padding: 10px;
-  font-weight: bold;
   font-size: 18px;
+  font-weight: bold;
 }
 
 #gameContainer {
@@ -43,93 +41,117 @@ footer {
 footer strong {
   color: #00ffcc;
 }
-
-.share-buttons button {
-  margin: 5px;
-  padding: 8px 12px;
-  border-radius: 6px;
-  border: none;
-  font-weight: bold;
-  cursor: pointer;
-}
-
-.limit {
-  font-size: 12px;
-  margin-top: 6px;
-  color: #ffcc00;
-}
 </style>
 </head>
 
 <body>
 <div id="game-wrapper">
+
   <header>Titi Booster Flyer</header>
 
   <div id="gameContainer"></div>
 
   <footer>
     🎁 Faites <strong>1000 points</strong> et obtenez <strong>1000F</strong> de bonus dans votre compte
-    <strong>TheBoostConcept</strong>
-
-    <div class="share-buttons">
-      <button onclick="share('whatsapp')">WhatsApp</button>
-      <button onclick="share('facebook')">Facebook</button>
-      <button onclick="share('instagram')">Instagram</button>
-      <button onclick="share('tiktok')">TikTok</button>
-    </div>
-
-    <div class="limit">
-      ⛔ Vous ne pouvez jouer que <strong>3 fois par semaine</strong>
-    </div>
+    <strong>TheBoostConcept</strong><br>
+    ⛔ Vous ne pouvez jouer que <strong>3 fois par semaine</strong>
   </footer>
+
 </div>
 
-<!-- PIXI -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pixi.js/7.4.3/pixi.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/pixi-sound/6.0.0/pixi-sound.min.js"></script>
 
 <script>
-// ================= PARTAGE =================
-function share(platform){
-  const url = encodeURIComponent(window.location.href);
-  const text = encodeURIComponent(
-    "🎮 Joue à Titi Booster Flyer et gagne 1000F sur TheBoostConcept !"
-  );
-
-  if(platform === 'whatsapp'){
-    window.open(`https://wa.me/?text=${text}%20${url}`, "_blank");
-  }
-  if(platform === 'facebook'){
-    window.open(`https://www.facebook.com/sharer/sharer.php?u=${url}`, "_blank");
-  }
-  if(platform === 'instagram' || platform === 'tiktok'){
-    alert("Copiez le lien et partagez-le sur " + platform);
-  }
-}
-
-// ================= LIMITE 3 PARTIES =================
-let plays = Number(localStorage.getItem('plays')) || 0;
-let lastPlay = localStorage.getItem('lastPlay');
-
-if(lastPlay && Date.now() - lastPlay > 7 * 24 * 60 * 60 * 1000){
-  plays = 0;
-}
-
-if(plays >= 10){
-  alert("⛔ Vous avez atteint la limite de 10 parties ce jour");
-  throw new Error("Limite atteinte");
-}
-
-plays++;
-localStorage.setItem('plays', plays);
-localStorage.setItem('lastPlay', Date.now());
-
-// ================= JEU =================
+// ================= PIXI APP (FIX ÉCRAN NOIR) =================
 const app = new PIXI.Application({
-  resizeTo: document.getElementById("gameContainer"),
+  width: window.innerWidth,
+  height: window.innerHeight,
   backgroundColor: 0x000000
 });
 document.getElementById("gameContainer").appendChild(app.view);
 
-// ================= SONS =================
-PIXI.sound.add('bg', './ass
+// ================= PLAYER (CARRÉ DE TEST) =================
+const player = new PIXI.Graphics();
+player.beginFill(0x00ffcc);
+player.drawRect(-25, -25, 50, 50);
+player.endFill();
+player.x = app.screen.width * 0.25;
+player.y = app.screen.height / 2;
+player.vy = 0;
+app.stage.addChild(player);
+
+// ================= SCORE =================
+let score = 0;
+const scoreText = new PIXI.Text("Score : 0", {
+  fill: 0xffffff,
+  fontSize: 20,
+  fontWeight: "bold"
+});
+scoreText.x = 10;
+scoreText.y = 10;
+app.stage.addChild(scoreText);
+
+// ================= COLLECTIBLE =================
+const collectible = new PIXI.Graphics();
+collectible.beginFill(0xff0066);
+collectible.drawCircle(0, 0, 12);
+collectible.endFill();
+app.stage.addChild(collectible);
+
+function resetCollectible() {
+  collectible.x = app.screen.width + Math.random() * 200;
+  collectible.y = 60 + Math.random() * (app.screen.height - 120);
+}
+resetCollectible();
+
+// ================= CONTROLE =================
+app.stage.eventMode = "static";
+app.stage.on("pointerdown", () => {
+  player.vy = -8;
+});
+
+// ================= GAME LOOP =================
+app.ticker.add(() => {
+
+  // gravité
+  player.vy += 0.4;
+  player.y += player.vy;
+
+  // collectible
+  collectible.x -= 3;
+  if (collectible.x < -20) resetCollectible();
+
+  // collision collectible
+  if (
+    Math.abs(player.x - collectible.x) < 30 &&
+    Math.abs(player.y - collectible.y) < 30
+  ) {
+    score += 50;
+    scoreText.text = "Score : " + score;
+    resetCollectible();
+  }
+
+  // mort si chute
+  if (player.y < 0 || player.y > app.screen.height) {
+    gameOver();
+  }
+
+  // victoire
+  if (score >= 1000) {
+    alert("🎉 Félicitations ! Vous avez gagné 1000F sur TheBoostConcept");
+    location.reload();
+  }
+});
+
+// ================= GAME OVER =================
+function gameOver() {
+  alert(
+    "GAME OVER !\n\nVotre score : " +
+    score +
+    "\n\nRéessayez pour gagner les 1000F"
+  );
+  location.reload();
+}
+</script>
+</body>
+</html>
