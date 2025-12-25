@@ -5,151 +5,208 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Titi Booster Flyer</title>
     <style>
-        * { -webkit-tap-highlight-color: transparent; -webkit-touch-callout: none; user-select: none; }
+        * {
+            -webkit-tap-highlight-color: transparent;
+            -webkit-touch-callout: none;
+            user-select: none;
+        }
+
         body { 
-            margin: 0; padding: 0; background: #000; overflow: hidden; 
-            display: flex; flex-direction: column; min-height: 100vh; 
-            font-family: 'Segoe UI', sans-serif; color: white; touch-action: manipulation;
+            margin: 0; 
+            padding: 0; 
+            background: #000; 
+            overflow: hidden; 
+            display: flex; 
+            flex-direction: column; 
+            min-height: 100vh; 
+            font-family: 'Segoe UI', sans-serif; 
+            color: white;
+            touch-action: manipulation;
         }
+
         .game-header { 
-            background: rgba(0, 0, 0, 0.95); padding: 8px; text-align: center; 
-            z-index: 10; border-bottom: 2px solid #ff9900; 
+            background: rgba(0, 0, 0, 0.95); 
+            padding: 10px; 
+            text-align: center; 
+            z-index: 10; 
+            border-bottom: 2px solid #ff9900; 
         }
-        .share-container { margin-top: 8px; display: flex; justify-content: center; gap: 10px; }
-        .share-btn { padding: 6px 12px; border-radius: 6px; text-decoration: none; color: white; font-size: 12px; font-weight: bold; }
-        .fb { background: #1877F2; } .wa { background: #25D366; }
-        #gameContainer { flex: 1; display: flex; justify-content: center; align-items: flex-start; padding-top: 5px; position: relative; }
-        #boostBarContainer {
-            position: absolute; top: 10px; right: 20px; width: 150px; height: 20px;
-            border: 2px solid white; border-radius: 10px; overflow: hidden; background: rgba(0,0,0,0.5);
+
+        .share-container { 
+            margin-top: 10px; 
+            display: flex; 
+            justify-content: center; 
+            gap: 15px; 
         }
-        #boostBar { width: 0%; height: 100%; background: linear-gradient(90deg, #ff9900, #ff0000); transition: width 0.2s; }
-        canvas { display: block; max-width: 100vw; max-height: 70vh; }
+
+        .share-btn { 
+            padding: 8px 15px; 
+            border-radius: 8px; 
+            text-decoration: none; 
+            color: white; 
+            font-size: 14px; 
+            font-weight: bold; 
+        }
+
+        .fb { background: #1877F2; } 
+        .wa { background: #25D366; }
+
+        #gameContainer { 
+            flex: 1; 
+            display: flex; 
+            justify-content: center; 
+            align-items: flex-start;
+            padding-top: 5px;
+        }
+
+        canvas { 
+            display: block; 
+            max-width: 100vw; 
+            max-height: 70vh; 
+        }
     </style>
 </head>
 <body>
     <div class="game-header">
-        <h1 style="margin:0; font-size: 18px; color: #ff9900;">Titi Booster Flyer 🚀</h1>
-        <p style="margin:3px 0; font-size: 13px;">Faites 1000 points et obtenez un bonus de <b>1000F</b> sur <br>
+        <h1 style="margin:0; font-size: 22px; color: #ff9900;">Titi Booster Flyer 🚀</h1>
+        <p style="margin:5px 0; font-size: 14px;">Faites 1000 points et obtenez un bonus de <b>1000F</b> sur <br>
            <a href="https://theboostconcept.com" style="color: #00ff00; text-decoration: none; font-weight: bold;">theboostconcept.com</a>
         </p>
-        <p style="margin:2px 0; font-size: 11px; color: #aaa;">Vous pouvez gagner 3 fois !</p>
+        <p style="margin:2px 0; font-size: 12px; color: #aaa;">Vous pouvez gagner 3 fois !</p>
+        
         <div class="share-container">
-            <a href="https://www.facebook.com/sharer/sharer.php?u=https://boostcamer-web.github.io/titi-booster/" target="_blank" class="share-btn fb">Facebook</a>
+            <a href="https://www.facebook.com/sharer/sharer.php?u=https://boostcamer-web.github.io/titi-booster/" target="_blank" class="share-btn fb">Partager sur Facebook</a>
             <a href="https://api.whatsapp.com/send?text=Joue à Titi Booster Flyer et gagne 1000F de bonus ! 👉 https://boostcamer-web.github.io/titi-booster/" target="_blank" class="share-btn wa">WhatsApp</a>
         </div>
     </div>
 
-    <div id="gameContainer">
-        <div id="boostBarContainer"><div id="boostBar"></div></div>
-    </div>
+    <div id="gameContainer"></div>
 
-    <audio id="bgMusic" loop><source src="https://cdn.pixabay.com/audio/2022/03/15/audio_7302484a00.mp3" type="audio/mpeg"></audio>
+    <audio id="bgMusic" loop>
+        <source src="https://cdn.pixabay.com/audio/2022/03/15/audio_7302484a00.mp3" type="audio/mpeg">
+    </audio>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pixi.js/7.4.3/pixi.min.js"></script>
     
     <script type="module">
         const __ASSET_MAP__ = {
-            "titi": { "url": "logo1.png" },
-            "bg": { "url": "https://storage.googleapis.com/scraper_ludo/user_images_prod/4e8126247acdc48a2cc3d9de1c355c40.png" },
+            "titi_player": { "url": "logo1.png" }, //
+            "sky_background": { "url": "https://storage.googleapis.com/scraper_ludo/user_images_prod/4e8126247acdc48a2cc3d9de1c355c40.png" },
             "insta": { "url": "https://storage.googleapis.com/scraper_ludo/user_images_prod/41561b59787ec16571c3f2bc32279d79.png" },
             "tiktok": { "url": "https://storage.googleapis.com/scraper_ludo/user_images_prod/da26053eade54abfb80d5e9e6b9448a5.png" },
-            "robot": { "url": "https://storage.googleapis.com/scraper_ludo/user_images_prod/a92c4af60a1cdb4229a3676ca00e3746.png" }
+            "cloud": { "url": "https://storage.googleapis.com/scraper_ludo/user_images_prod/a92c4af60a1cdb4229a3676ca00e3746.png" }
         };
 
-        const app = new PIXI.Application({ width: 800, height: 600, backgroundColor: 0x1099bb });
+        const app = new PIXI.Application({ 
+            width: 800, height: 600, backgroundColor: 0x1099bb,
+            resolution: window.devicePixelRatio || 1, autoDensity: true
+        });
         document.getElementById('gameContainer').appendChild(app.view);
 
         class Game {
             constructor() {
-                this.score = 0; this.boost = 0; this.isGameOver = false; this.isBoosting = false;
-                this.speed = 4; this.entities = [];
-                this.uiBoost = document.getElementById('boostBar');
+                this.score = 0;
+                this.isGameOver = false;
+                this.musicStarted = false;
+                this.collectibles = [];
+                this.obstacles = [];
+                this.spawnTimer = 0;
             }
 
             setup() {
-                this.cont = new PIXI.Container(); app.stage.addChild(this.cont);
-                this.sky = new PIXI.TilingSprite(PIXI.Texture.from(__ASSET_MAP__.bg), 1600, 600);
-                this.cont.addChild(this.sky);
+                this.container = new PIXI.Container();
+                app.stage.addChild(this.container);
 
-                this.player = PIXI.Sprite.from(__ASSET_MAP__.titi);
-                this.player.anchor.set(0.5); this.player.x = 150; this.player.y = 300;
-                this.player.width = 100; this.player.height = 80; this.player.vy = 0;
-                this.cont.addChild(this.player);
+                this.bg = new PIXI.TilingSprite(PIXI.Texture.from(__ASSET_MAP__.sky_background.url), 1600, 600);
+                this.container.addChild(this.bg);
 
-                this.txt = new PIXI.Text('Score: 0', { fill: 0xffffff, fontSize: 30, fontWeight: 'bold' });
-                this.txt.x = 20; this.txt.y = 20; app.stage.addChild(this.txt);
+                this.player = PIXI.Sprite.from(__ASSET_MAP__.titi_player.url);
+                this.player.anchor.set(0.5);
+                this.player.x = 150; this.player.y = 300;
+                this.player.width = 110; this.player.height = 80;
+                this.player.velocity = 0;
+                this.container.addChild(this.player);
+
+                this.scoreText = new PIXI.Text('Score: 0', { fill: 0xffffff, fontSize: 36, fontWeight: 'bold' });
+                this.scoreText.x = 20; this.scoreText.y = 20;
+                app.stage.addChild(this.scoreText);
 
                 app.stage.eventMode = 'static';
                 app.stage.on('pointerdown', () => {
-                    if (!this.music) { document.getElementById('bgMusic').play(); this.music = true; }
-                    if (!this.isGameOver) this.player.vy = -8;
+                    if (!this.musicStarted) {
+                        document.getElementById('bgMusic').play();
+                        this.musicStarted = true;
+                    }
+                    if(!this.isGameOver) this.player.velocity = -8;
                 });
             }
 
             update() {
                 if (this.isGameOver) return;
 
-                let gravity = this.isBoosting ? 0.2 : 0.4;
-                this.player.vy += gravity;
-                this.player.y += this.player.vy;
-                this.speed = this.isBoosting ? 10 : 4;
-                this.sky.tilePosition.x -= this.speed;
+                this.player.velocity += 0.4;
+                this.player.y += this.player.velocity;
+                this.bg.tilePosition.x -= 4;
 
-                if (this.player.y > 600 || this.player.y < 0) this.die();
+                // Si le joueur tombe ou sort de l'écran -> Recommence
+                if (this.player.y > 600 || this.player.y < 0) this.reset();
 
-                if (Math.random() < 0.03) this.spawn();
-
-                for (let i = this.entities.length - 1; i >= 0; i--) {
-                    let e = this.entities[i];
-                    e.x -= this.speed + 2;
-                    if (this.hit(this.player, e)) {
-                        if (e.isRobot) {
-                            if (!this.isBoosting) this.die();
-                        } else {
-                            this.score += 25; this.boost += 10;
-                            this.cont.removeChild(e); this.entities.splice(i, 1);
-                        }
-                    }
-                    if (e.x < -100) { this.cont.removeChild(e); this.entities.splice(i, 1); }
+                this.spawnTimer++;
+                if (this.spawnTimer > 40) {
+                    this.createObject();
+                    this.spawnTimer = 0;
                 }
 
-                if (this.boost >= 100) { this.isBoosting = true; this.boost = 100; setTimeout(() => { this.isBoosting = false; this.boost = 0; }, 4000); }
-                this.uiBoost.style.width = this.boost + "%";
-                this.txt.text = `Score: ${this.score}` + (this.isBoosting ? " - BOOST !!" : "");
+                this.collectibles.forEach((c, i) => {
+                    c.x -= 6;
+                    if (this.hitTest(this.player, c)) {
+                        this.score += 25;
+                        this.container.removeChild(c);
+                        this.collectibles.splice(i, 1);
+                    }
+                });
+
+                this.obstacles.forEach((o) => {
+                    o.x -= 7;
+                    if (this.hitTest(this.player, o)) this.reset(); // Si touché -> Recommence
+                });
+
+                this.scoreText.text = `Score: ${this.score}`;
                 if (this.score >= 1000) this.win();
             }
 
-            spawn() {
-                const type = Math.random();
-                let tex = type > 0.7 ? __ASSET_MAP__.robot : (type > 0.35 ? __ASSET_MAP__.insta : __ASSET_MAP__.tiktok);
-                let s = PIXI.Sprite.from(tex);
-                s.anchor.set(0.5); s.x = 850; s.y = Math.random() * 500 + 50;
-                s.width = 50; s.height = 50; s.isRobot = (type > 0.7);
-                this.entities.push(s); this.cont.addChild(s);
+            createObject() {
+                const isObstacle = Math.random() > 0.7;
+                let tex = isObstacle ? __ASSET_MAP__.cloud.url : (Math.random() > 0.5 ? __ASSET_MAP__.insta.url : __ASSET_MAP__.tiktok.url);
+                const obj = PIXI.Sprite.from(tex);
+                obj.anchor.set(0.5);
+                obj.x = 850; obj.y = Math.random() * 500 + 50;
+                obj.width = 50; obj.height = 50;
+                this.container.addChild(obj);
+                if(isObstacle) this.obstacles.push(obj); else this.collectibles.push(obj);
             }
 
-            hit(a, b) {
-                const ab = a.getBounds(); const bb = b.getBounds();
-                return ab.x + ab.width*0.7 > bb.x && ab.x < bb.x + bb.width*0.7 && ab.y + ab.height*0.7 > bb.y && ab.y < bb.y + bb.height*0.7;
+            hitTest(a, b) {
+                const aBox = a.getBounds(); const bBox = b.getBounds();
+                return aBox.x + aBox.width * 0.7 > bBox.x && aBox.x < bBox.x + bBox.width * 0.7 && aBox.y + aBox.height * 0.7 > bBox.y && aBox.y < bBox.y + bBox.height * 0.7;
             }
 
-            die() {
+            reset() {
                 this.isGameOver = true;
-                alert("GAME OVER ! \nRessayez pour gagner les 1000F Bonus !");
-                location.reload();
+                location.reload(); // Recommence immédiatement
             }
 
             win() {
                 this.isGameOver = true;
-                alert("FÉLICITATIONS ! Titi a boosté ton compte de 1000F !");
+                alert("FÉLICITATIONS ! 🏆\nVous avez gagné votre bonus de 1000F.");
                 window.location.href = "https://wa.me/237674142665";
             }
         }
 
-        const g = new Game();
+        const game = new Game();
         PIXI.Assets.load(Object.values(__ASSET_MAP__).map(a => a.url)).then(() => {
-            g.setup(); app.ticker.add(() => g.update());
+            game.setup();
+            app.ticker.add(() => game.update());
         });
     </script>
 </body>
